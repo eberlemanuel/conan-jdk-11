@@ -28,4 +28,19 @@ jobs:
         run: conan --version
 
       - name: Create Conan package
-        run: conan create . 
+        run: |
+          conan create . java/stable
+          conan install openjdk/11.0.18 -g=virtualenv
+      
+      - name: Activate Virtualenv
+        run: ./activate.ps1
+        shell: powershell
+        if: ${{ matrix.os }} == 'windows-latest'
+
+      - name: Activate Virtualenv
+        run: source activate.sh
+        shell: sh
+        if: ${{ matrix.os }} != 'windows-latest'
+
+      - name: Check JDK
+        run: java --version
