@@ -8,8 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        #python: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
-        python: ['3.9']
+        python: ['3.9', '3.12.0-alpha.6']
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -29,18 +28,26 @@ jobs:
 
       - name: Create Conan package
         run: |
-          conan export . openjdk/11.0.18@java/stable
-          conan install . openjdk/11.0.18@java/stable -g=virtualenv
+          conan create . openjdk/11.0.18@java/stable
+          conan install openjdk/11.0.18@java/stable -g=virtualenv
       
-      - name: Activate Virtualenv
+      - name: Activate Virtualenv and check JDK version
         if: matrix.os == 'windows-latest'
-        run: ./activate.ps1
+        run: |
+          ./activate.ps1
+          java --version
         shell: powershell
 
-      - name: Activate Virtualenv
-        if: matrix.os != 'windows-latest'
-        run: source activate.sh
-        shell: sh
+      - name: Activate Virtualenv and check JDK version
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          source activate.sh
+          java --version
+        shell: bash
 
-      - name: Check JDK
-        run: java --version
+      - name: Activate Virtualenv and check JDK version
+        if: matrix.os == 'macos-latest'
+        run: |
+          source activate.sh
+          java --version
+        shell: bash
