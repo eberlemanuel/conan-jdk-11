@@ -22,20 +22,17 @@ class JavaJdkRecipe(ConanFile):
 
     def build(self):
         filename = "OpenJDK11U-jdk_x64_{0}_hotspot_11.0.18_10.{1}"
-        dstDiretory = ""
+        dstDiretory = "jdk-11.0.18+10"
 
         if self.settings.os == "Windows":
             filename = filename.format("windows", "zip")
             checksum = "0cfa5991a8e372b3f8eacacbb2a336663ead0cc6ec9c9ab6cd53206602fb0062"
-            dstDiretory = filename
         if self.settings.os == "Macos":
             filename = filename.format("mac", "tar.gz")
             checksum = "75d79315d7265cc4b89fd9e844161ff90798bc6482ace8c1ac75f862a5b3b565"
-            dstDiretory = "jdk-11.0.18+10"
         if self.settings.os == "Linux":
             filename = filename.format("linux", "tar.gz")
             checksum = "4a29efda1d702b8ff38e554cf932051f40ec70006caed5c4857a8cbc7a0b7db7"
-            dstDiretory = "jdk-11.0.18+10"
 
         downloadUrl = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.18%2B10/" + filename
         self.output.info("Download: {0}".format(downloadUrl))
