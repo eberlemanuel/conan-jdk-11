@@ -1,5 +1,4 @@
 from conan import ConanFile, tools
-from conans.tools import os_info
 from conan.tools.files import get
 from conans.errors import ConanInvalidConfiguration
 
@@ -15,25 +14,27 @@ class JavaJdkRecipe(ConanFile):
     description = "Java OpenJDK 11 installer distributed via Conan"
     topics = ("java", "jdk", "jdk11")
 
-    settings = {"os" : ["Windows", "Macos"], "arch": ["x86_64"]}
+    settings = {"os" : ["Windows", "Linux", "Macos"], "arch": ["x86_64"]}
 
     def validate(self):
         if self.settings.arch != "x86_64":
             raise ConanInvalidConfiguration("Unsupported Architecture. This package currently only supports x86_64.")
-        if self.settings.os != "Windows" and self.settings.os != "Macos":
-            raise ConanInvalidConfiguration("Unsupported OS. This package currently only supports Windows.")
 
     def build(self):
         filename = "OpenJDK11U-jdk_x64_{0}_hotspot_11.0.18_10.{1}"
         dstDiretory = ""
 
-        if os_info.is_windows:
+        if self.settings.os == "Windows":
             filename = filename.format("windows", "zip")
             checksum = "0cfa5991a8e372b3f8eacacbb2a336663ead0cc6ec9c9ab6cd53206602fb0062"
             dstDiretory = filename
-        if os_info.is_macos:
+        if self.settings.os == "Macos":
             filename = filename.format("mac", "tar.gz")
             checksum = "75d79315d7265cc4b89fd9e844161ff90798bc6482ace8c1ac75f862a5b3b565"
+            dstDiretory = "jdk-11.0.18+10"
+        if self.settings.os == "Linux":
+            filename = filename.format("linux", "tar.gz")
+            checksum = "4a29efda1d702b8ff38e554cf932051f40ec70006caed5c4857a8cbc7a0b7db7"
             dstDiretory = "jdk-11.0.18+10"
 
         downloadUrl = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.18%2B10/" + filename
@@ -42,7 +43,7 @@ class JavaJdkRecipe(ConanFile):
         os.rename(dstDiretory, "sources")
 
     def package(self):
-        if self.settings.os == "Windows":
+        if self.settings.os == "Windows" or self.settings.os == "Linux":
             self.copy(pattern="*", dst=".", src="sources")
         if self.settings.os == "Macos":
             self.copy(pattern="*", dst=".", src=os.path.join("sources","Contents", "Home"))
