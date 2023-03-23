@@ -29,8 +29,8 @@ jobs:
 
       - name: Create Conan package
         run: |
-          conan create . java/stable
-          conan install openjdk/11.0.18 -g=virtualenv
+          conan export . java/stable
+          conan install openjdk/11.0.18@java/stable -g=virtualenv
       
       - name: Activate Virtualenv
         run: ./activate.ps1
